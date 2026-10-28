@@ -33,6 +33,10 @@ public class Item {
     @JoinColumn(name = "found_by_user_id", nullable = false)
     private User foundBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ItemStatus status = ItemStatus.ACTIVE;
