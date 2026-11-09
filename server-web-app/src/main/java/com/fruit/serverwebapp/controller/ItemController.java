@@ -1,10 +1,13 @@
 package com.fruit.serverwebapp.controller;
 
+import com.fruit.serverwebapp.dto.request.ChangeItemStatusRequest;
 import com.fruit.serverwebapp.dto.request.ItemRequest;
 import com.fruit.serverwebapp.dto.response.ItemResponse;
+import com.fruit.serverwebapp.model.ItemStatus;
 import com.fruit.serverwebapp.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +19,27 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
 
-    @GetMapping()
-    public ResponseEntity<List<ItemResponse>> getAllItems() {
-        return ResponseEntity.ok(itemService.getAllItems());
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponse> getItem(@PathVariable Long id) {
         return ResponseEntity.ok(itemService.getItemById(id));
     }
 
+    @GetMapping()
+    public ResponseEntity<List<ItemResponse>> getItems(
+            @RequestParam(required = false) ItemStatus status,
+            @RequestParam(required = false) Long organizationId,
+            @RequestParam(name = "foundBy", required = false) Long foundById) {
+        return ResponseEntity.ok(itemService.getItems(status, organizationId, foundById));
+    }
+
     @PostMapping
     public ResponseEntity<ItemResponse> createItem(@RequestBody @Valid ItemRequest request) {
         return ResponseEntity.ok(itemService.createItem(request));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ItemResponse> changeItemStatus(@PathVariable Long id, @RequestBody ChangeItemStatusRequest request) {
+        return ResponseEntity.ok(itemService.changeItemStatus(id, request));
     }
 
     @DeleteMapping("/{id}")
