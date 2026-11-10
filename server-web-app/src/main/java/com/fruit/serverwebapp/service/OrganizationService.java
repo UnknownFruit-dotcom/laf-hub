@@ -2,10 +2,12 @@ package com.fruit.serverwebapp.service;
 
 import com.fruit.serverwebapp.config.PasscodeGenerator;
 import com.fruit.serverwebapp.dto.request.OrganizationRequest;
+import com.fruit.serverwebapp.dto.request.OrganizationUpdateRequest;
 import com.fruit.serverwebapp.dto.response.OrganizationCreatedResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationResponse;
 import com.fruit.serverwebapp.dto.response.ParticipationResponse;
 import com.fruit.serverwebapp.exception.AlreadyJoinedException;
+import com.fruit.serverwebapp.exception.NotJoinedException;
 import com.fruit.serverwebapp.exception.ResourceNotFoundException;
 import com.fruit.serverwebapp.mapper.OrganizationMapper;
 import com.fruit.serverwebapp.model.Organization;
@@ -87,6 +89,30 @@ public class OrganizationService {
         participation.setJoinedAt(LocalDateTime.now());
 
         return organizationMapper.toParticipationResponse(userOrganizationRepository.save(participation));
+    }
+
+    @Transactional
+    public void leaveOrg(Long orgId, Long userId) {
+        Organization organization = organizationRepository.findById(orgId)
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + orgId));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
+
+        UserOrganization participation = userOrganizationRepository.findByUserAndOrganization(user, organization)
+            .orElseThrow(() -> new NotJoinedException("User with id " + user.getId() + " has not joined the organization \"" + organization.getTitle() + "\""));
+
+        userOrganizationRepository.deleteById(participation.getId());
+    }
+
+    @Transactional
+    public OrganizationResponse updateOrg(Long id, OrganizationUpdateRequest request) {
+        Organization organization = organizationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + id));
+
+        organizationMapper.updateOrganizationFromDto(request, organization);
+
+        return organizationMapper.toResponse(organizationRepository.save(organization));
     }
 
     @Transactional

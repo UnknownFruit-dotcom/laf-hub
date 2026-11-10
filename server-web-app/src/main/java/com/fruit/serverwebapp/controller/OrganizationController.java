@@ -1,6 +1,7 @@
 package com.fruit.serverwebapp.controller;
 
 import com.fruit.serverwebapp.dto.request.OrganizationRequest;
+import com.fruit.serverwebapp.dto.request.OrganizationUpdateRequest;
 import com.fruit.serverwebapp.dto.response.ItemResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationCreatedResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationResponse;
@@ -39,6 +40,19 @@ public class OrganizationController {
             @RequestParam Long userId,
             @RequestParam String passcode) {
         return ResponseEntity.ok(organizationService.joinOrg(orgId, userId, passcode));
+    }
+
+    @PostMapping("/{orgId}/leave")
+    public ResponseEntity<Void> leaveOrg(
+            @PathVariable Long orgId,
+            @RequestParam Long userId) {
+        organizationService.leaveOrg(orgId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<OrganizationResponse> updateOrg(@PathVariable Long id, @RequestBody OrganizationUpdateRequest request) {
+        return ResponseEntity.ok(organizationService.updateOrg(id, request));
     }
 
     @DeleteMapping("/{id}")

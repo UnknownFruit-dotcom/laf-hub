@@ -6,7 +6,11 @@ import com.fruit.serverwebapp.model.UserOrganization;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserOrganizationRepository extends JpaRepository<UserOrganization, Long> {
     boolean existsByUserAndOrganization(User user, Organization organization);
+
+    Optional<UserOrganization> findByUserAndOrganization(User user, Organization organization);
 }

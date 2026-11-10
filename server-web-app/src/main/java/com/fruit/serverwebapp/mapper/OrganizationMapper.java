@@ -1,17 +1,17 @@
 package com.fruit.serverwebapp.mapper;
 
 import com.fruit.serverwebapp.dto.request.OrganizationRequest;
+import com.fruit.serverwebapp.dto.request.OrganizationUpdateRequest;
 import com.fruit.serverwebapp.dto.response.OrganizationCreatedResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationResponse;
 import com.fruit.serverwebapp.dto.response.ParticipationResponse;
 import com.fruit.serverwebapp.model.Organization;
 import com.fruit.serverwebapp.model.UserOrganization;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OrganizationMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -29,4 +29,7 @@ public interface OrganizationMapper {
     ParticipationResponse toParticipationResponse (UserOrganization participation);
 
     List<OrganizationResponse> toResponseList(List<Organization> organizations);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateOrganizationFromDto(OrganizationUpdateRequest dto, @MappingTarget Organization entity);
 }
