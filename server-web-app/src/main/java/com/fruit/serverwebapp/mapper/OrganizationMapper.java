@@ -31,5 +31,6 @@ public interface OrganizationMapper {
     List<OrganizationResponse> toResponseList(List<Organization> organizations);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "isActive", source = "isActive")
     void updateOrganizationFromDto(OrganizationUpdateRequest dto, @MappingTarget Organization entity);
 }

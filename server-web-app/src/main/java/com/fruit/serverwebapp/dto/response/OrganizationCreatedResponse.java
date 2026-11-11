@@ -9,6 +9,7 @@ public record OrganizationCreatedResponse(
         Long id,
         String title,
         String description,
+        Boolean isActive,
         String verificationCode,
         UserShortResponse createdBy,
         LocalDateTime createdAt) {

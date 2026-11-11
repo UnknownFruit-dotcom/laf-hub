@@ -9,6 +9,8 @@ public record OrganizationResponse(
         Long id,
         String title,
         String description,
+        Boolean isActive,
+        LocalDateTime lastActivityAt,
         UserShortResponse createdBy,
         LocalDateTime createdAt) {
 }

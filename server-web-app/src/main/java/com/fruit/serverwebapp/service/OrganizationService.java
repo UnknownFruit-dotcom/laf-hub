@@ -8,6 +8,7 @@ import com.fruit.serverwebapp.dto.response.OrganizationResponse;
 import com.fruit.serverwebapp.dto.response.ParticipationResponse;
 import com.fruit.serverwebapp.exception.AlreadyJoinedException;
 import com.fruit.serverwebapp.exception.NotJoinedException;
+import com.fruit.serverwebapp.exception.OrganizationDeactivatedException;
 import com.fruit.serverwebapp.exception.ResourceNotFoundException;
 import com.fruit.serverwebapp.mapper.OrganizationMapper;
 import com.fruit.serverwebapp.model.Organization;
@@ -39,8 +40,8 @@ public class OrganizationService {
     private final PasswordEncoder passwordEncoder;
     private final PasscodeGenerator passcodeGenerator;
 
-    public List<OrganizationResponse> getAllOrgs() {
-        List<Organization> organizations = organizationRepository.findAll();
+    public List<OrganizationResponse> getOrgs(Boolean isActive) {
+        List<Organization> organizations = organizationRepository.findFiltered(isActive);
         return organizationMapper.toResponseList(organizations);
     }
 
@@ -62,6 +63,7 @@ public class OrganizationService {
         organization.setVerificationCodeHash(passwordEncoder.encode(passcode));
 
         organization.setCreatedAt(LocalDateTime.now());
+        organization.setLastActivityAt(LocalDateTime.now());
 
         Organization saved = organizationRepository.save(organization);
         return organizationMapper.toCreatedResponse(saved, passcode);
@@ -71,6 +73,10 @@ public class OrganizationService {
     public ParticipationResponse joinOrg(Long orgId, Long userId, String passcode) {
         Organization organization = organizationRepository.findById(orgId)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found with id: " + orgId));
+
+        if (Boolean.FALSE.equals(organization.getIsActive())) {
+            throw new OrganizationDeactivatedException("Organization with id " + orgId + " has been deactivated");
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + userId));
@@ -88,6 +94,9 @@ public class OrganizationService {
         participation.setUser(user);
         participation.setJoinedAt(LocalDateTime.now());
 
+        organization.setLastActivityAt(LocalDateTime.now());
+        organizationRepository.save(organization);
+
         return organizationMapper.toParticipationResponse(userOrganizationRepository.save(participation));
     }
 
@@ -101,6 +110,9 @@ public class OrganizationService {
 
         UserOrganization participation = userOrganizationRepository.findByUserAndOrganization(user, organization)
             .orElseThrow(() -> new NotJoinedException("User with id " + user.getId() + " has not joined the organization \"" + organization.getTitle() + "\""));
+
+        organization.setLastActivityAt(LocalDateTime.now());
+        organizationRepository.save(organization);
 
         userOrganizationRepository.deleteById(participation.getId());
     }

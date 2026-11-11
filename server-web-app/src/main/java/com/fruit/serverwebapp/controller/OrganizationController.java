@@ -2,7 +2,7 @@ package com.fruit.serverwebapp.controller;
 
 import com.fruit.serverwebapp.dto.request.OrganizationRequest;
 import com.fruit.serverwebapp.dto.request.OrganizationUpdateRequest;
-import com.fruit.serverwebapp.dto.response.ItemResponse;
+
 import com.fruit.serverwebapp.dto.response.OrganizationCreatedResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationResponse;
 import com.fruit.serverwebapp.dto.response.ParticipationResponse;
@@ -20,8 +20,8 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     @GetMapping()
-    public ResponseEntity<List<OrganizationResponse>> getAllOrgs() {
-        return ResponseEntity.ok(organizationService.getAllOrgs());
+    public ResponseEntity<List<OrganizationResponse>> getOrgs(@RequestParam(required = false) Boolean isActive) {
+        return ResponseEntity.ok(organizationService.getOrgs(isActive));
     }
 
     @GetMapping("/{id}")
@@ -51,7 +51,9 @@ public class OrganizationController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<OrganizationResponse> updateOrg(@PathVariable Long id, @RequestBody OrganizationUpdateRequest request) {
+    public ResponseEntity<OrganizationResponse> updateOrg(
+            @PathVariable Long id,
+            @RequestBody OrganizationUpdateRequest request) {
         return ResponseEntity.ok(organizationService.updateOrg(id, request));
     }
 
