@@ -33,12 +33,12 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@RequestBody @Valid ItemRequest request) {
+    public ResponseEntity<ItemResponse> createItem(@Valid @RequestBody ItemRequest request) {
         return ResponseEntity.ok(itemService.createItem(request));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ItemResponse> changeItemStatus(@PathVariable Long id, @RequestBody ChangeItemStatusRequest request) {
+    public ResponseEntity<ItemResponse> changeItemStatus(@PathVariable Long id, @Valid @RequestBody ChangeItemStatusRequest request) {
         return ResponseEntity.ok(itemService.changeItemStatus(id, request));
     }
 

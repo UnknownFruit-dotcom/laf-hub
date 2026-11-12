@@ -7,6 +7,7 @@ import com.fruit.serverwebapp.dto.response.OrganizationCreatedResponse;
 import com.fruit.serverwebapp.dto.response.OrganizationResponse;
 import com.fruit.serverwebapp.dto.response.ParticipationResponse;
 import com.fruit.serverwebapp.service.OrganizationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class OrganizationController {
     }
 
     @PostMapping()
-    public ResponseEntity<OrganizationCreatedResponse> createOrg(@RequestBody OrganizationRequest request) {
+    public ResponseEntity<OrganizationCreatedResponse> createOrg(@Valid @RequestBody OrganizationRequest request) {
         return ResponseEntity.ok(organizationService.createOrg(request));
     }
 
@@ -53,7 +54,7 @@ public class OrganizationController {
     @PatchMapping("/{id}")
     public ResponseEntity<OrganizationResponse> updateOrg(
             @PathVariable Long id,
-            @RequestBody OrganizationUpdateRequest request) {
+            @Valid @RequestBody OrganizationUpdateRequest request) {
         return ResponseEntity.ok(organizationService.updateOrg(id, request));
     }
 

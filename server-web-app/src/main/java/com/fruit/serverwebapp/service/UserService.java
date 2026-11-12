@@ -5,7 +5,6 @@ import com.fruit.serverwebapp.dto.request.UserUpdateRequest;
 import com.fruit.serverwebapp.dto.response.UserResponse;
 import com.fruit.serverwebapp.exception.AlreadyExistsException;
 import com.fruit.serverwebapp.exception.ResourceNotFoundException;
-import com.fruit.serverwebapp.exception.UserAlreadyExistsException;
 import com.fruit.serverwebapp.mapper.UserMapper;
 import com.fruit.serverwebapp.model.Role;
 import com.fruit.serverwebapp.model.User;
@@ -73,7 +72,7 @@ public class UserService {
 
         if (request.login() != null && !request.login().isBlank()) {
             if (userRepository.existsByLoginAndIdNot(request.login(), id)) {
-                throw new UserAlreadyExistsException(
+                throw new AlreadyExistsException(
                         "User with login \"" + request.login() + "\" already exists");
             }
         }

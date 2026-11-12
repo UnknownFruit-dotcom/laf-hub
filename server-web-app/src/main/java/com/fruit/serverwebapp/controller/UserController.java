@@ -3,6 +3,7 @@ package com.fruit.serverwebapp.controller;
 import com.fruit.serverwebapp.dto.request.UserUpdateRequest;
 import com.fruit.serverwebapp.dto.response.UserResponse;
 import com.fruit.serverwebapp.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
-            @RequestBody UserUpdateRequest request) {
+            @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
 }
