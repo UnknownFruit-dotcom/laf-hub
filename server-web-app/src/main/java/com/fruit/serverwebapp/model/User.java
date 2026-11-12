@@ -34,4 +34,7 @@ public class User {
 
     @OneToMany(mappedBy = "foundBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> foundItems = new ArrayList<>();
+
+    @Column(nullable = false, name = "is_active")
+    private Boolean isActive = true;
 }

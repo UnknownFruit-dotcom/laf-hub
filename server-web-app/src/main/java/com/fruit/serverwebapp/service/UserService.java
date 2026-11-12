@@ -1,8 +1,11 @@
 package com.fruit.serverwebapp.service;
 
 import com.fruit.serverwebapp.dto.request.UserCreationRequest;
+import com.fruit.serverwebapp.dto.request.UserUpdateRequest;
 import com.fruit.serverwebapp.dto.response.UserResponse;
 import com.fruit.serverwebapp.exception.AlreadyExistsException;
+import com.fruit.serverwebapp.exception.ResourceNotFoundException;
+import com.fruit.serverwebapp.exception.UserAlreadyExistsException;
 import com.fruit.serverwebapp.mapper.UserMapper;
 import com.fruit.serverwebapp.model.Role;
 import com.fruit.serverwebapp.model.User;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +54,31 @@ public class UserService {
         String hashedPassword = passwordEncoder.encode(request.password());
         user.setPasswordHash(hashedPassword);
         return user;
+    }
+
+    public List<UserResponse> getUsers(Boolean isActive) {
+        return userMapper.toResponseList(userRepository.findFiltered(isActive));
+    }
+
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + id));
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional
+    public UserResponse updateUser(Long id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id:" + id));
+
+        if (request.login() != null && !request.login().isBlank()) {
+            if (userRepository.existsByLoginAndIdNot(request.login(), id)) {
+                throw new UserAlreadyExistsException(
+                        "User with login \"" + request.login() + "\" already exists");
+            }
+        }
+
+        userMapper.updateUserFromDto(request, user);
+        return userMapper.toResponse(userRepository.save(user));
     }
 }

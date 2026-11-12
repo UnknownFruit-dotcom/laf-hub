@@ -12,4 +12,5 @@ public record UserResponse(
         Long id,
         String login,
         LocalDateTime createdAt,
-        Role role) { }
+        Role role,
+        Boolean isActive) { }
